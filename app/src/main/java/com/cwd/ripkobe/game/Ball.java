@@ -18,7 +18,14 @@ public class Ball implements Runnable {
     private Status status;
 
     enum Status{
-        UP,DOWN,IDLE;
+        /**
+         * 球在跳动中
+         */
+        BOUNCING,
+        /**
+         * 球在地板滚动
+         */
+        IDLE
     }
 
     private boolean isLToR = false;
