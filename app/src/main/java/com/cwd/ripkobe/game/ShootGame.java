@@ -40,7 +40,9 @@ public class ShootGame extends SurfaceView implements SurfaceHolder.Callback,Run
     private int boardX,boardY;
     private int ballX,ballY;
     private int ballInitY;
-    //开始起跳球x坐标
+    /**
+     * 开始起跳球x坐标
+     */
     private int startBounceBallX,startBounceBallY;
 
     private Bitmap bg;
@@ -52,6 +54,11 @@ public class ShootGame extends SurfaceView implements SurfaceHolder.Callback,Run
      * 上一步是否得分，防止计分区域重复计分
      */
     private boolean isGoalLastStep;
+
+    /**
+     * 用来判断球是上升还是下坠中
+     */
+    private int lastBallY;
 
     private OnShootGameListener listener;
 
@@ -149,7 +156,9 @@ public class ShootGame extends SurfaceView implements SurfaceHolder.Callback,Run
         }
 
         ballBounceLogic();
-        scoreLogic();
+        if(isDowning()){
+            scoreLogic();
+        }
     }
 
     /**
@@ -173,6 +182,8 @@ public class ShootGame extends SurfaceView implements SurfaceHolder.Callback,Run
             if(ballY >= ballInitY){
                 ballY = ballInitY;
                 ball.setStatus(Ball.Status.IDLE);
+                //跳动之后直接落地切换方向
+                resetBackBoard();
             }
             Log.d(TAG,distance+"==distance");
         }
@@ -222,6 +233,21 @@ public class ShootGame extends SurfaceView implements SurfaceHolder.Callback,Run
         }else {
             boardX = getWidth();
         }
+    }
+
+    /**
+     * 篮球是否下坠中，下坠中的得分才有效
+     * @return
+     */
+    private boolean isDowning(){
+        boolean flag;
+        if(ballY - lastBallY > 0){
+            flag = true;
+        }else{
+            flag = false;
+        }
+        lastBallY = ballY;
+        return flag;
     }
 
     private void draw(){
