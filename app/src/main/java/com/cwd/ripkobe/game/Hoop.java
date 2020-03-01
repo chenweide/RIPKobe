@@ -53,6 +53,7 @@ public class Hoop {
         isLeft = left;
     }
 
+
     public int getWidth(){
         if(leftHoop != null){
             return leftHoop.getWidth();

@@ -16,6 +16,10 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.cwd.ripkobe.R;
+import com.cwd.ripkobe.game.collision.BackBoardCollision;
+import com.cwd.ripkobe.game.collision.AbstractCollision;
+import com.cwd.ripkobe.game.collision.HoopCollision;
+import com.cwd.ripkobe.game.listener.OnCollisionResultListener;
 import com.cwd.ripkobe.game.listener.OnShootGameListener;
 
 import java.util.Random;
@@ -24,7 +28,7 @@ public class ShootGame extends SurfaceView implements SurfaceHolder.Callback,Run
 
     public static final String TAG = "ShootGame";
 
-    public static final int BALL_MAX_BOUNCE_HEIGHT = 200;
+    public static final int BALL_MAX_BOUNCE_HEIGHT = 250;
 
     private SurfaceHolder surfaceHolder;
     private Thread thread;
@@ -61,6 +65,9 @@ public class ShootGame extends SurfaceView implements SurfaceHolder.Callback,Run
     private int lastBallY;
 
     private OnShootGameListener listener;
+
+    private AbstractCollision boardCollision;
+    private AbstractCollision hoopCollision;
 
     public ShootGame(Context context) {
         this(context,null);
@@ -142,6 +149,14 @@ public class ShootGame extends SurfaceView implements SurfaceHolder.Callback,Run
     }
 
     private void logic(){
+        //碰撞检测
+        if(boardCollision != null){
+//            boardCollision.check(ball,isLeftBoard);
+        }
+        if(hoopCollision != null){
+//            hoopCollision.check(ball,isLeftBoard);
+        }
+
         ballDegrees = (ballDegrees + 5) % 360;
         if(isLeftBoard){
             ballX -= 6;
@@ -231,7 +246,7 @@ public class ShootGame extends SurfaceView implements SurfaceHolder.Callback,Run
         if(isLeftBoard){
             boardX = 0;
         }else {
-            boardX = getWidth();
+            boardX = getWidth() - backBoard.getWidth();
         }
     }
 
@@ -288,6 +303,10 @@ public class ShootGame extends SurfaceView implements SurfaceHolder.Callback,Run
     private void drawBackboard(){
         if(backBoard == null){
             backBoard = new BackBoard(getResources());
+            boardCollision = new BackBoardCollision(backBoard);
+            boardCollision.setOnCollisionResultListener(boardListener);
+            hoopCollision = new HoopCollision(backBoard.getHoop());
+            hoopCollision.setOnCollisionResultListener(hoopListener);
         }
         backBoard.setLeft(isLeftBoard);
         backBoard.setX(boardX);
@@ -319,26 +338,10 @@ public class ShootGame extends SurfaceView implements SurfaceHolder.Callback,Run
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
-
-//                isLeftBoard = !isLeftBoard;
-//                if(isLeftBoard){
-//                    boardX = 0;
-//                    boardY = getHeight() / 2;
-//                }else {
-//                    boardX = getWidth();
-//                    boardY = getHeight() / 2;
-//                }
-
-//                isLeftBoard = false;
-
                 if(listener != null){
                     listener.onClick();
                 }
-                startBounceBallX = ballX;
-                startBounceBallY = ballY;
-                ball.setStatus(Ball.Status.BOUNCING);
-                //每次点击重置
-                isGoalLastStep = false;
+                bounce();
                 break;
 
             default:
@@ -347,5 +350,65 @@ public class ShootGame extends SurfaceView implements SurfaceHolder.Callback,Run
         return true;
     }
 
+    private void bounce(){
+        startBounceBallX = ballX;
+        startBounceBallY = ballY;
+        ball.setStatus(Ball.Status.BOUNCING);
+        //每次点击重置
+        isGoalLastStep = false;
+    }
 
+    private OnCollisionResultListener boardListener = new OnCollisionResultListener() {
+        @Override
+        public void top() {
+            bounce();
+        }
+
+        @Override
+        public void bottom() {
+            bounce();
+        }
+
+        @Override
+        public void left() {
+            bounce();
+        }
+
+        @Override
+        public void leftTopCorner() {
+            bounce();
+        }
+
+        @Override
+        public void leftBottomCorner() {
+            bounce();
+        }
+    };
+
+    private OnCollisionResultListener hoopListener = new OnCollisionResultListener() {
+        @Override
+        public void top() {
+
+        }
+
+        @Override
+        public void bottom() {
+
+        }
+
+        @Override
+        public void left() {
+            bounce();
+        }
+
+        @Override
+        public void leftTopCorner() {
+
+        }
+
+        @Override
+        public void leftBottomCorner() {
+
+        }
+    };
 }
