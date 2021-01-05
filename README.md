@@ -6,4 +6,7 @@ RIP.Kobe
 
 过完年，当时由于疫情无法返工还待在家里
 
-那天清晨醒来打开手机看到的一条微博热搜，我始终不能相信
+那天清晨醒来打开手机看到的一条微博热搜，我始终不能相信<br>
+
+**Gif可能需要科学上网才能正常浏览**
+![image](https://github.com/chenweide/wanAndroid/blob/master/image/wandroid_example.gif)
